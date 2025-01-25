@@ -59,20 +59,36 @@ def image_to_3d(image_path='assets/demo.png'):
 
 
 def text_to_3d(prompt='a car'):
+    print('Starting text to 3d')
     rembg = BackgroundRemover()
+    print('Loading models')
     t2i = HunyuanDiTPipeline('Tencent-Hunyuan/HunyuanDiT-v1.1-Diffusers-Distilled')
     model_path = 'tencent/Hunyuan3D-2'
     i23d = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained(model_path)
+    print('Models loaded')
 
+
+    print('Processing text')
     image = t2i(prompt)
+    print('Removing background')
     image = rembg(image)
-    mesh = i23d(image, num_inference_steps=30, mc_algo='mc')[0]
-    mesh = FloaterRemover()(mesh)
-    mesh = DegenerateFaceRemover()(mesh)
-    mesh = FaceReducer()(mesh)
-    mesh.export('t2i_demo.glb')
+
+    # Debug, output image
+    image.save('text.png')
+
+    # print('Generating 3d')
+    # mesh = i23d(image, num_inference_steps=30, mc_algo='mc')[0]
+    # print('Post processing')
+    # print('Removing floaters')
+    # mesh = FloaterRemover()(mesh)
+    # print('Removing degenerate faces')
+    # mesh = DegenerateFaceRemover()(mesh)
+    # print('Reducing faces')
+    # mesh = FaceReducer()(mesh)
+    # print('Exporting')
+    # mesh.export('t2i_demo.glb')
 
 
 if __name__ == '__main__':
-    image_to_3d()
-    # text_to_3d()
+    # image_to_3d()
+    text_to_3d()
